@@ -23,11 +23,31 @@ The --netdev <ip> will show a specific network device.
 ### Force a resync.
 Just use the --forcesync <ip> option
 
-Shows a list of the deviceId and the IP address of the device with the tag "switch"
 ```buildoutcfg
-$ ./tag.py --tag switch 
-https://sandboxdnac.cisco.com:8080/api/v1/tag/association?tag=switch&resourceType=network-device
-https://sandboxdnac.cisco.com:8080/api/v1/network-device/74b69532-5dc3-45a1-a0dd-6d1d10051f27
-https://sandboxdnac.cisco.com:8080/api/v1/network-device/6d3eaa5d-bb39-4cc4-8881-4a2b2668d2dc
-[('74b69532-5dc3-45a1-a0dd-6d1d10051f27', '10.10.22.70'), ('6d3eaa5d-bb39-4cc4-8881-4a2b2668d2dc', '10.10.22.66')]
+
+```
+
+### Delete Network Devices
+```buildoutcfg
+./networkDevice.py --delete 10.10.50.2 10.10.50.3
+https://10.66.104.121:443/dna/intent/api/v1/network-device?managementIpAddress=10.10.50.2
+Waiting for Task 535f490c-f658-447f-ac6f-0b6c655d88fe
+Task=535f490c-f658-447f-ac6f-0b6c655d88fe has not completed yet. Sleeping 5 seconds...
+Task=535f490c-f658-447f-ac6f-0b6c655d88fe has not completed yet. Sleeping 5 seconds...
+10.10.50.2:Network device deleted successfully
+https://10.66.104.121:443/dna/intent/api/v1/network-device?managementIpAddress=10.10.50.3
+Waiting for Task 8fca6b88-17ba-4809-bf06-24c30769e96a
+Task=8fca6b88-17ba-4809-bf06-24c30769e96a has not completed yet. Sleeping 5 seconds...
+10.10.50.3:Network device deleted successfully
+
+```
+
+### Add Network Devices to inventory
+```buildoutcfg
+./networkDevice.py --username cisco --password cisco --snmp public --add 10.10.50.2 10.10.50.3 
+Waiting for Task 863cece3-e100-48df-b60a-9d01351d6223
+https://10.66.104.121:443/dna/intent/api/v1/task/863cece3-e100-48df-b60a-9d01351d6223/tree
+url:/task/863cece3-e100-48df-b60a-9d01351d6223/tree
+deviceUuid:b8ade651-12a1-4abd-afd3-2e2e383b3627 ipAddress:10.10.50.2 message:Success
+deviceUuid:4ed1974e-bf77-4d9a-b36a-17295e378054 ipAddress:10.10.50.3 message:Success
 ```

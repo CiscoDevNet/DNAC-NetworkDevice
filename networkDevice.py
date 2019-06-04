@@ -56,7 +56,7 @@ def delete_devices(deviceList):
         print('{}:{}'.format(device, response['progress']))
 
 def add_devices(deviceList, snmp,username,password):
-    print (snmp,username, password)
+    #print (snmp,username, password)
     payload = {
 	"ipAddress": deviceList,
 	"type": "NETWORK_DEVICE",
