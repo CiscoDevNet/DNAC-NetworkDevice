@@ -31,14 +31,15 @@ def show_devices():
             serialPlatformList = zip(device['serialNumber'].split(","), device['platformId'].split(","))
         else:
             serialPlatformList = [(device['serialNumber'], device['platformId'])]
+
         for (serialNumber, platformId) in serialPlatformList:
             print("{0:42}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
-                  format(device['hostname'],
-                         device['managementIpAddress'],
-                         serialNumber,
-                         platformId,
-                         device['softwareVersion'],
-                         device['role'], uptime))
+                  format(str(device['hostname']),
+                         str(device['managementIpAddress']),
+                         str(serialNumber),
+                         str(platformId),
+                         str(device['softwareVersion']),
+                         str(device['role']), uptime))
 def forcesync(devicelist):
 
     payload = map(device2id, devicelist)
