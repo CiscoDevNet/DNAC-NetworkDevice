@@ -41,8 +41,9 @@ def show_devices():
                          str(device['softwareVersion']),
                          str(device['role']), uptime))
 def forcesync(devicelist):
-
-    payload = map(device2id, devicelist)
+    logging.debug("SYNC:{}".format(str(devicelist)))
+    payload = list(map(device2id, devicelist))
+    logging.debug(payload)
     response = put_and_wait('dna/intent/api/v1/network-device/sync', payload)
     print(response)
 
@@ -108,7 +109,9 @@ if __name__ == "__main__":
     parser.add_argument('rest', nargs=REMAINDER)
     args = parser.parse_args()
     if args.v:
+
         logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+        logging.debug("DEBUG ENABLED")
 
     if args.netdev:
         response = get_url("dna/intent/api/v1/network-device?managementIpAddress={}".format(args.netdev))
