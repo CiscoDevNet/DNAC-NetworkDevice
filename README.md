@@ -24,7 +24,13 @@ The --netdev <ip> will show a specific network device.
 Just use the --forcesync <ip> option
 
 ```buildoutcfg
-
+$ ./networkDevice.py  --forcesync 10.10.50.2  
+https://10.66.104.121:443/dna/intent/api/v1/network-device?managementIpAddress=10.10.50.2
+Waiting for Task 89f9171a-7a85-4da6-a8cf-796b5c68e20d
+{'progress': 'Synced devices:\n', 'startTime': 1559614908907, 'version': 1559614908970, 'endTime': 1559614908972, 
+'lastUpdate': 1559614908970, 'serviceType': 'Inventory service', 'isError': False, 
+'rootId': '89f9171a-7a85-4da6-a8cf-796b5c68e20d', 'instanceTenantId': '5ccbc72a3aea9800cf8e5e76', 
+'id': '89f9171a-7a85-4da6-a8cf-796b5c68e20d'}
 ```
 
 ### Delete Network Devices
@@ -50,4 +56,9 @@ https://10.66.104.121:443/dna/intent/api/v1/task/863cece3-e100-48df-b60a-9d01351
 url:/task/863cece3-e100-48df-b60a-9d01351d6223/tree
 deviceUuid:b8ade651-12a1-4abd-afd3-2e2e383b3627 ipAddress:10.10.50.2 message:Success
 deviceUuid:4ed1974e-bf77-4d9a-b36a-17295e378054 ipAddress:10.10.50.3 message:Success
+```
+### Advanced
+can also use these with xargs.  Will provide the first 50 devices as argument to delete
+```
+head -50 /tmp/failed | xargs ./networkDevice.py --delete
 ```
