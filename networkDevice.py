@@ -4,7 +4,7 @@ import sys
 import json
 import logging
 from argparse import ArgumentParser, REMAINDER
-from util import get_url, post_and_wait, put_and_wait, delete_and_wait
+from util import get_url, post_and_wait, put_and_wait, delete, wait_on_tasks
 import time
 
 
@@ -48,14 +48,26 @@ def forcesync(devicelist):
     print(response)
 
 def delete_devices(deviceList):
+    taskdict = {}
     for device in deviceList:
         try:
             dev_id = device2id(device)
         except IndexError:
             print("{}: ERROR NOT FOUND".format(device))
             continue
-        response = delete_and_wait('dna/intent/api/v1/network-device/{}'.format(dev_id))
-        print('{}:{}'.format(device, response['progress']))
+        taskid = delete('dna/intent/api/v1/network-device/{}'.format(dev_id))
+        print('deleting {}:{}'.format(device, taskid))
+        taskdict[taskid] = device
+    #print(json.dumps(taskdict))
+    print("polling deletion tasks")
+    responses = wait_on_tasks(taskdict.keys())
+
+    print("\nTask results:")
+    for response in responses:
+        message = ''
+        if 'progress' in response:
+            message = response['progress']
+        print('{}:{}:{}'.format(taskdict[response['id']], response['id'],message))
 
 def add_devices(deviceList, snmp,username,password):
     #print (snmp,username, password)

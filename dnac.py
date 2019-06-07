@@ -57,7 +57,7 @@ def wait_on_task(task_id, token, timeout=(5*RETRY_INTERVAL), retry_interval=RETR
         "x-auth-token": token["token"]
     }
     start_time = time.time()
-
+    first = True    
     while True:
         result = requests.get(url=task_url, headers=headers, verify=False)
         result.raise_for_status()
@@ -67,11 +67,15 @@ def wait_on_task(task_id, token, timeout=(5*RETRY_INTERVAL), retry_interval=RETR
         if "endTime" in response:
             return response
         else:
+            # print a message the first time throu
+            if first:
+                print("Task:{} not complete, waiting {} seconds, polling {}".format(task_id, timeout, retry_interval))
+                first = False
             if timeout and (start_time + timeout < time.time()):
                 raise TaskTimeoutError("Task %s did not complete within the specified timeout "
                                        "(%s seconds)" % (task_id, timeout))
 
-            print("Task=%s has not completed yet. Sleeping %s seconds..." %(task_id, retry_interval))
+            logging.debug("Task=%s has not completed yet. Sleeping %s seconds..." %(task_id, retry_interval))
             time.sleep(retry_interval)
 
         if response['isError'] == True:
