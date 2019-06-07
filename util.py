@@ -4,6 +4,7 @@ import os
 import sys
 import requests
 import json
+import logging
 
 
 
@@ -22,7 +23,7 @@ def get_url(url):
     except requests.exceptions.RequestException as cerror:
         print("Error processing request", cerror)
         sys.exit(1)
-
+    logging.debug("GET returned",response.json())
     return response.json()
 
 def post_and_wait(url, data):
