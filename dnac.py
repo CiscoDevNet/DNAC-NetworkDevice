@@ -57,7 +57,7 @@ def wait_on_task(task_id, token, timeout=(5*RETRY_INTERVAL), retry_interval=RETR
         "x-auth-token": token["token"]
     }
     start_time = time.time()
-    first = True    
+    first = True
     while True:
         result = requests.get(url=task_url, headers=headers, verify=False)
         result.raise_for_status()
