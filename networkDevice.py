@@ -50,6 +50,7 @@ def forcesync(devicelist):
 def delete_devices(deviceList):
     taskdict = {}
     for device in deviceList:
+        device=device.rstrip()
         try:
             dev_id = device2id(device)
         except IndexError:
