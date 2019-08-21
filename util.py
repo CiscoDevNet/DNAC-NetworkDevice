@@ -15,7 +15,7 @@ def get_url(url):
 
     url = create_url(path=url)
 
-    print(url)
+    logging.debug(url)
     token = get_auth_token()
     headers = {'X-auth-token' : token['token']}
     try:

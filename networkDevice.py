@@ -7,7 +7,7 @@ from argparse import ArgumentParser, REMAINDER
 from util import get_url, post_and_wait, put_and_wait, delete, wait_on_tasks
 import time
 
-
+LIMIT=10
 def device2id(device):
     response = get_url('dna/intent/api/v1/network-device?managementIpAddress={0}'.format(device))
     logging.debug(response)
@@ -18,12 +18,22 @@ def id2device(deviceId):
     return response['response']['managementIpAddress']
 
 def show_devices():
-    response = get_url('dna/intent/api/v1/network-device')
+    # fix pagination
+
+    devices = []
+    response = get_url('dna/intent/api/v1/network-device/count')
+    count = response['response']
+    logging.debug("count={}".count)
+    for start in range(1, count + 1, LIMIT):
+        response = get_url('dna/intent/api/v1/network-device?offset={}&limit={}'.format(start, LIMIT))
+        devices.extend(response['response'])
+
+    # print header
     print("{0:42}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
           format("hostname", "mgmt IP", "serial",
                  "platformId", "SW Version", "role", "Uptime"))
 
-    for device in response['response']:
+    for device in devices:
         uptime = "N/A" if device['upTime'] is None else device['upTime']
 
         # this is for the case of switch stacks.. multiple serial and model numbers
@@ -40,7 +50,9 @@ def show_devices():
                          str(platformId),
                          str(device['softwareVersion']),
                          str(device['role']), uptime))
+
 def forcesync(devicelist):
+    deviceList = [ d.rstrip() for d in devicelist]
     logging.debug("SYNC:{}".format(str(devicelist)))
     payload = list(map(device2id, devicelist))
     logging.debug(payload)
@@ -72,19 +84,20 @@ def delete_devices(deviceList):
 
 def add_devices(deviceList, snmp,username,password):
     #print (snmp,username, password)
+    deviceList = [d.rstrip() for d in deviceList]
     payload = {
-	"ipAddress": deviceList,
-	"type": "NETWORK_DEVICE",
-	"computeDevice": "false",
-	"snmpVersion": "v2",
-	"snmpROCommunity": snmp,
-	"snmpRWCommunity": "",
-	"snmpRetry": "3",
-	"snmpTimeout": "5",
-	"cliTransport": "ssh",
-	"userName": username,
-	"password": password,
-	"enablePassword": ""
+        "ipAddress": deviceList,
+        "type": "NETWORK_DEVICE",
+        "computeDevice": "false",
+        "snmpVersion": "v2",
+        "snmpROCommunity": snmp,
+        "snmpRWCommunity": "",
+        "snmpRetry": "3",
+        "snmpTimeout": "5",
+        "cliTransport": "ssh",
+        "userName": username,
+        "password": password,
+        "enablePassword": ""
     }
     response = post_and_wait("dna/intent/api/v1/network-device", data=payload)
     task = response['id']
