@@ -7,7 +7,7 @@ from argparse import ArgumentParser, REMAINDER
 from util import get_url, post_and_wait, put_and_wait, delete, wait_on_tasks
 import time
 
-LIMIT=10
+LIMIT=500
 def device2id(device):
     response = get_url('dna/intent/api/v1/network-device?managementIpAddress={0}'.format(device))
     logging.debug(response)
