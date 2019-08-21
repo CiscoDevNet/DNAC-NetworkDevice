@@ -43,7 +43,7 @@ def show_devices():
             serialPlatformList = [(device['serialNumber'], device['platformId'])]
 
         for (serialNumber, platformId) in serialPlatformList:
-            print("{0:50}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
+            print("{0:50.49}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
                   format(str(device['hostname']),
                          str(device['managementIpAddress']),
                          str(serialNumber),
@@ -51,21 +51,41 @@ def show_devices():
                          str(device['softwareVersion']),
                          str(device['role']), uptime))
 
-def update_creds(devicelist):
-    payload= {
-	"type": "NETWORK_DEVICE",
-	"computeDevice": "false",
-	"snmpVersion": "v2",
-	"snmpROCommunity": "NO!$DATA!$",
-	"snmpRWCommunity": "NO!$DATA!$",
-	"snmpRetry": "3",
-	"snmpTimeout": "5",
-	"cliTransport": "ssh",
-	"userName": "sdn1",
-	"password": "NO!$DATA!$",
-	"enablePassword": "NO!$DATA!$",
-	"ipAddress": ["10.10.3.122"]
-}
+
+
+def update_devices(deviceList, snmp,username,password, enable):
+    #print (snmp,username, password)
+    deviceList = [d.rstrip() for d in deviceList]
+    payload = {
+        "ipAddress": deviceList,
+        "type": "NETWORK_DEVICE",
+        "computeDevice": "false",
+        "snmpVersion": "v2",
+        "snmpROCommunity": snmp,
+        "snmpRWCommunity": "",
+        "snmpRetry": "3",
+        "snmpTimeout": "5",
+        "cliTransport": "ssh",
+        "userName": username,
+        "password": password,
+        "enablePassword": enable
+    }
+    #print(json.dumps(payload,indent=2))
+
+    response = put_and_wait("dna/intent/api/v1/network-device", data=payload)
+    task = response['id']
+    time.sleep(5)
+    tree = get_url("dna/intent/api/v1/task/{}/tree".format(task))
+    logging.debug(json.dumps(tree,indent=2))
+
+    for t in tree['response']:
+        if 'failureReason' in t:
+            print(t['failureReason'])
+        else:
+            #progress = json.loads(t['progress'])
+
+            #print (" ".join(['{}:{}'.format(k, progress[k]) for k in progress.keys()]))
+            print(t['progress'])
 
 def forcesync(devicelist):
     deviceList = [ d.rstrip() for d in devicelist]
@@ -140,9 +160,13 @@ if __name__ == "__main__":
                         help="delete  devices from inventory")
     parser.add_argument('--add', action='store_true', required=False,
                         help="add  devices to inventory")
+    parser.add_argument('--update', action='store_true', required=False,
+                        help="update  devices in inventory")
     parser.add_argument('--username', type=str, default='cisco', required=False,
                         help="username")
     parser.add_argument('--password', type=str, default='cisco', required=False,
+                        help="password")
+    parser.add_argument('--enable', type=str, default='cisco', required=False,
                         help="password")
     parser.add_argument('--snmp', type=str, default='public',required=False,
                        help="snmp")
@@ -165,5 +189,7 @@ if __name__ == "__main__":
         delete_devices(args.rest)
     elif args.add:
         add_devices(args.rest, username=args.username,password=args.password,snmp=args.snmp)
+    elif args.update:
+        update_devices(args.rest, username=args.username,password=args.password,snmp=args.snmp, enable=args.enable)
     else:
         show_devices()
