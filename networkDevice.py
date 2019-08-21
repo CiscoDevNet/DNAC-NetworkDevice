@@ -29,7 +29,7 @@ def show_devices():
         devices.extend(response['response'])
 
     # print header
-    print("{0:42}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
+    print("{0:50}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
           format("hostname", "mgmt IP", "serial",
                  "platformId", "SW Version", "role", "Uptime"))
 
