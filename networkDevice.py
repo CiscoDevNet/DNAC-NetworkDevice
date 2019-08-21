@@ -53,16 +53,20 @@ def show_devices():
 
 
 
-def update_devices(deviceList, snmp,username,password, enable):
+def update_devices(deviceList, snmpauth, snmppriv,snmpuser,username,password, enable):
     #print (snmp,username, password)
     deviceList = [d.rstrip() for d in deviceList]
     payload = {
         "ipAddress": deviceList,
         "type": "NETWORK_DEVICE",
         "computeDevice": "false",
-        "snmpVersion": "v2",
-        "snmpROCommunity": snmp,
-        "snmpRWCommunity": "",
+        "snmpVersion": "v3",
+        "snmpMode": "AUTHPRIV",
+        "snmpAuthProtocol": "SHA",
+        "snmpAuthPassphrase":snmpauth,
+        "snmpPrivProtocol": "AES128",
+        "snmpPrivPassphrase": snmppriv,
+        "snmpUserName": snmpuser,
         "snmpRetry": "3",
         "snmpTimeout": "5",
         "cliTransport": "ssh",
@@ -71,6 +75,7 @@ def update_devices(deviceList, snmp,username,password, enable):
         "enablePassword": enable
     }
     #print(json.dumps(payload,indent=2))
+    #return
 
     response = put_and_wait("dna/intent/api/v1/network-device", data=payload)
     task = response['id']
@@ -89,8 +94,8 @@ def update_devices(deviceList, snmp,username,password, enable):
 
 def forcesync(devicelist):
     deviceList = [ d.rstrip() for d in devicelist]
-    logging.debug("SYNC:{}".format(str(devicelist)))
-    payload = list(map(device2id, devicelist))
+    logging.debug("SYNC:{}".format(str(deviceList)))
+    payload = list(map(device2id, deviceList))
     logging.debug(payload)
     response = put_and_wait('dna/intent/api/v1/network-device/sync', payload)
     print(response)
@@ -170,6 +175,12 @@ if __name__ == "__main__":
                         help="password")
     parser.add_argument('--snmp', type=str, default='public',required=False,
                        help="snmp")
+    parser.add_argument('--snmpauth', type=str, default='public', required=False,
+                        help="snmp")
+    parser.add_argument('--snmppriv', type=str, default='public', required=False,
+                        help="snmp")
+    parser.add_argument('--snmpuser', type=str, default='public', required=False,
+                        help="snmp")
     parser.add_argument('-v', action='store_true',
                         help="verbose")
     parser.add_argument('rest', nargs=REMAINDER)
@@ -190,6 +201,7 @@ if __name__ == "__main__":
     elif args.add:
         add_devices(args.rest, username=args.username,password=args.password,snmp=args.snmp)
     elif args.update:
-        update_devices(args.rest, username=args.username,password=args.password,snmp=args.snmp, enable=args.enable)
+        update_devices(args.rest, username=args.username,password=args.password,
+                       snmpauth=args.snmpauth,snmppriv=args.snmppriv, snmpuser=args.snmpuser,enable=args.enable)
     else:
         show_devices()
