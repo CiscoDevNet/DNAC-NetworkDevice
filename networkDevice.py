@@ -43,13 +43,29 @@ def show_devices():
             serialPlatformList = [(device['serialNumber'], device['platformId'])]
 
         for (serialNumber, platformId) in serialPlatformList:
-            print("{0:42}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
+            print("{0:50}{1:17}{2:12}{3:18}{4:12}{5:16}{6:15}".
                   format(str(device['hostname']),
                          str(device['managementIpAddress']),
                          str(serialNumber),
                          str(platformId),
                          str(device['softwareVersion']),
                          str(device['role']), uptime))
+
+def update_creds(devicelist):
+    payload= {
+	"type": "NETWORK_DEVICE",
+	"computeDevice": "false",
+	"snmpVersion": "v2",
+	"snmpROCommunity": "NO!$DATA!$",
+	"snmpRWCommunity": "NO!$DATA!$",
+	"snmpRetry": "3",
+	"snmpTimeout": "5",
+	"cliTransport": "ssh",
+	"userName": "sdn1",
+	"password": "NO!$DATA!$",
+	"enablePassword": "NO!$DATA!$",
+	"ipAddress": ["10.10.3.122"]
+}
 
 def forcesync(devicelist):
     deviceList = [ d.rstrip() for d in devicelist]
