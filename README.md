@@ -67,3 +67,29 @@ can also use these with xargs.  Will provide the first 50 devices as argument to
 ```
 head -50 /tmp/failed | xargs ./networkDevice.py --delete
 ```
+
+### Change management IP address.
+The change_mgmt_ip.py changes the management IP address of a list of devices. You need a csv file with two columns, oldip and newip.
+
+A sample is provided in workfiles/change.csv.  This is a trivial example that changes a management IP address, then changes it back.
+```buildoutcfg
+$ cat workfiles/change.csv 
+oldip,newip
+10.10.15.200,10.10.15.201
+10.10.15.201,10.10.15.200
+
+```
+
+the script is run as follows:
+```buildoutcfg
+$ ./change_mgmt_ip.py --ipmgmtfile workfiles/change.csv 
+Changing Management IP 10.10.15.200 to 10.10.15.201.
+Waiting for Task ea75e45f-779c-4ed8-8898-6ebaa1f09ea1
+Inventory service updating devices
+Updated device 10.10.15.201, result = true
+Changing Management IP 10.10.15.201 to 10.10.15.200.
+Waiting for Task dc90f1a7-1644-44c3-92a9-280fd3c9a9d8
+Inventory service updating devices
+Updated device 10.10.15.200, result = true
+
+```
