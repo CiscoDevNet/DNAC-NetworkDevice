@@ -3,6 +3,22 @@ This tool shows all network devices, a specific one as well as forcing a resync 
 
 Network devices can also be deleted.
 
+## Installing and Running
+
+I would recommend using a virtual environment.  All that is required is the requests module
+```buildoutcfg
+pip install requests
+```
+The script uses the dnac_config.py file to specify the DNA Center, username and password.
+These can also be set using environment variables too.  Run the following commands in the shell (changing the appropriate values)
+
+```buildoutcfg
+export DNAC="1.1.1.1"
+export DNAC_USER="admin"
+export DNAC_PASSWORD="password"
+export DNAC_PORT=443
+
+```
 ## Examples
 
 ### List of network devices
