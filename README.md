@@ -93,3 +93,24 @@ Inventory service updating devices
 Updated device 10.10.15.200, result = true
 
 ```
+
+### Change Device Role.
+takes a CSV file of ip address and new role.   Updates device to new role.
+
+This sample does the same device twice, but that is just for testing.
+```buildoutcfg
+$ cat workfiles/role.csv 
+ip,role
+10.10.15.100,ACCESS
+10.10.15.100,DISTRIBUTION
+
+```
+Need to run the script with the input csv file.
+```buildoutcfg
+ ./change_role.py --rolefile workfiles/role.csv 
+Changing role of device IP 10.10.15.100 to ACCESS: Task:a53f2936-9d03-49bc-a910-04d345d9da77 not complete, waiting 10 seconds, polling 2
+Device role was succesfully updated to ACCESS for 10.10.15.100
+Changing role of device IP 10.10.15.100 to DISTRIBUTION: Task:0a972775-4cf8-4418-817f-6027bbb5621c not complete, waiting 10 seconds, polling 2
+Device role was succesfully updated to DISTRIBUTION for 10.10.15.100
+
+```
